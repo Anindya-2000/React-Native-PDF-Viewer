@@ -66,8 +66,10 @@ const DirectoryBrowser = (props) => {
     }
 
     useEffect(() => {
+        setPathStack([]);
         getAllDirs(RNFS.ExternalStorageDirectoryPath);
-    }, [])
+        () => {setPathStack([]);  setData([])}
+    }, [props])
 
 
     return (
@@ -102,7 +104,7 @@ const DirectoryBrowser = (props) => {
                         />
                         <View style = {{flexDirection: 'row', justifyContent: 'flex-end', opacity: 1}}>
                             <PaperBtn mode = "contained" onPress = {() => { op == 0 ? copyFile(selectedPdf, pathStack[pathStack.length - 1], setAllPdfs, setFavPdfs, setRecentPdfs): moveFile(selectedPdf, pathStack[pathStack.length - 1], setAllPdfs, setFavPdfs, setRecentPdfs); hideModal(1)}} style = {styles.btnStyle}>Select</PaperBtn>
-                            <PaperBtn mode = "contained" onPress = {() => {hideModal(0)}} style = {styles.btnStyle}>Cancel</PaperBtn>
+                            <PaperBtn mode = "contained" onPress = {() => {hideModal(0);}} style = {styles.btnStyle}>Cancel</PaperBtn>
                         </View>
                     </View>  
                 </TouchableOpacity>          

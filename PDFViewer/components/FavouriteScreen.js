@@ -17,6 +17,7 @@ import PdfItem from './PdfItem';
 import RenameModal from './RenameModal';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import DirectoryBrowser from './DirectoryBrowser';
+import ListView from './ListView';
 
 const ViewTypes = {
     FULL: 0,
@@ -83,23 +84,6 @@ const FavouriteScreen = ({navigation, route, theme}) => {
     }
     const closeBrowserModal = () => setBrowserModalOpen(false);
 
-    let _layoutProvider = new LayoutProvider(
-        index => {
-            return ViewTypes.FULL;
-        },
-        (type, dim) => {
-            dim.width = width;
-            dim.height = 73;
-        }
-    );
-
-    //Since component should always render once data has changed, make data provider part of the state
-
-    let _rowRenderer = (type, data) => {
-        //You can return any view here, CellContainer has no special significance
-        return <PdfItem item = {data} theme = {theme} showBottomSlider = {showBottomSlider} navigation = {navigation}/>
-    }
-
     useEffect(() => {
         InteractionManager.runAfterInteractions(() => {
             /* 2: Component is done animating */
@@ -146,10 +130,12 @@ const FavouriteScreen = ({navigation, route, theme}) => {
                 theme = {theme}
                 />
             }
-            <RecyclerListView 
-            layoutProvider={_layoutProvider} 
-            dataProvider={favPdfs} 
-            rowRenderer={_rowRenderer}
+ 
+            <ListView
+            data = {favPdfs}
+            theme = {theme}
+            navigation = {navigation}
+            showBottomSlider = {showBottomSlider}
             />
             { isBottomSliderVisible && <BottomSlider openBrowserModal = {openBrowserModal} openRenameModal = {openRenameModal} showDeleteModal = {showDeleteModal} theme={theme} visible = {isBottomSliderVisible} hideModal = {hideBottomSlider} selectedPdf = {selectedPdf}/>}
             <DirectoryBrowser

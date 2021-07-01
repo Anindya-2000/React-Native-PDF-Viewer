@@ -19,7 +19,7 @@ function usePdfContext() {
 
 function PdfProvider(props) {
     const [allPdfs, setAllPdfs] = React.useState(new DataProvider((r1, r2) => {
-        return r1._id !== r2._id;
+        return r1 !== r2;
     }));
     const [favPdfs, setFavPdfs] = React.useState(new DataProvider((r1, r2) => {
         return r1._id !== r2._id;
@@ -102,18 +102,13 @@ const moveFile = (pdf, path, setAllPdfs, setFavPdfs, setRecentPdfs) => {
             path: "myrealm",
             schema: schema,
         }).then(realm => {
-            let allpdfs = realm.objects('Pdf');
-            const _id = getNewID(allpdfs);
+            let curpdf = realm.objectForPrimaryKey('Pdf', pdf._id);
             realm.write(() => {
-                realm.create('Pdf', {
-                    ...pdf,
-                    _id: _id,
-                    path: newPath, 
-                    dir: path,
-                    lastRead: null,
-                    displayPath: getPath(path),
-                })
+                curpdf.path = newPath,
+                curpdf.dir = path,
+                curpdf.displayPath = getPath(path)
             })
+            const allpdfs = realm.objects('Pdf');
             postCCDRupdate(allpdfs, setAllPdfs, setFavPdfs, setRecentPdfs);
         })
     })
@@ -129,12 +124,12 @@ const deleteFile = (selectedPdf, setFavPdfs, setAllPdfs, setRecentPdfs) => {
             path: "myrealm",
             schema: schema,
         }).then(realm => {
-            const pdfList = realm.objects('Pdf').filtered(`_id != ${selectedPdf._id}`);
-            postCCDRupdate(pdfList, setAllPdfs, setFavPdfs, setRecentPdfs);
+            const pdfList = realm.objects('Pdf');
             const oldPdf = realm.objectForPrimaryKey('Pdf', selectedPdf._id);
             realm.write(() => {
                 realm.delete(oldPdf)
-            })            
+            })       
+            postCCDRupdate(pdfList, setAllPdfs, setFavPdfs, setRecentPdfs);     
         })
     })
     // `unlink` will throw an error, if the item to unlink does not exist
@@ -177,9 +172,11 @@ const copyData = (pdfList, setHook) => {
             isFav: pdfList[i].isFav,
         })
     }
-    if(pdfArray.length) {
-        setHook(prev => prev.cloneWithRows(pdfArray));
-    }
+
+    // setHook(prev => prev.cloneWithRows(pdfArray));
+    setHook(new DataProvider((r1, r2) => {
+        return r1 !== r2;
+    }).cloneWithRows(pdfArray));
 }
 
 // Function to rename pdf file
@@ -191,13 +188,13 @@ const renameFile = (selectedPdf, setAllPdfs, setFavPdfs, setRecentPdfs, input) =
                 path: 'myrealm',
                 schema: schema
             }).then((realm) => {
+                const pdfList = realm.objects('Pdf');
+                const new_id = getNewID(pdfList);
                 let pdf = realm.objectForPrimaryKey('Pdf', selectedPdf._id);
                 realm.write(() => {
                     pdf.path = newPath,
                     pdf.name = input
                 })
-
-                const pdfList = realm.objects('Pdf');
                 postCCDRupdate(pdfList, setAllPdfs, setFavPdfs, setRecentPdfs);
             })
         })
@@ -335,8 +332,6 @@ const GetAllPdfs = async (path, pdfArray, isUpdate = false, isExist) => {
     }
 }
 
-export {PdfProvider, usePdfContext}
-
 // <-------------------- HomeScreen Specific Functions ----------------------------->
 
 const getRecentPdfs = (setRecentPdfs) => {
@@ -374,3 +369,5 @@ const getFavPdfs = (setFavPdfs, setLoading) => {
         copyData(favPdf, setFavPdfs);
     })
 }
+
+export {PdfProvider, usePdfContext, PdfContext}

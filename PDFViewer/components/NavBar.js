@@ -7,7 +7,8 @@ const NavBar = (props) => {
     const openMenu = () => setVisible(true);
     const closeMenu = () => setVisible(false);
     const {showSortingModal, navigation} = props;
- 
+
+
     return (
         <Appbar.Header>
             <Appbar.Content title="PDF Viewer" titleStyle = {{fontSize: 17}}/>
@@ -27,4 +28,4 @@ const NavBar = (props) => {
     )
 };
 
-export default NavBar;
+export default React.memo(NavBar);

@@ -5,7 +5,8 @@ import {
   View,
   InteractionManager,
   Dimensions, 
-  StatusBar
+  StatusBar,
+  BackHandler
 } from 'react-native';
 import { withTheme } from 'react-native-paper';
 import NavBar from './NavBar';
@@ -21,6 +22,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { PermissionsAndroid } from 'react-native'
 import DirectoryBrowser from './DirectoryBrowser';
 import FileLoader from './FileLoader';
+import ListView from './ListView';
 
 const ViewTypes = {
     FULL: 0,
@@ -104,13 +106,40 @@ const FileScreen = ({navigation, theme}) => {
         }
     }
 
+    const requestExternalStoreageWrite = async () => {
+        try {
+            // const granted = await PermissionsAndroid.request(
+            //     PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+            //     {
+            //         'title': 'PDF Viewer',
+            //         'message': 'App needs access to write external storage'
+            //     }
+            // );
+            const granted = await PermissionsAndroid.requestMultiple([
+                PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+                PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
+            ]);
+            const readGranted = await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE); 
+            const writeGranted = await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE);
+            return readGranted && writeGranted
+        } 
+        catch (err) {
+        //Handle this error
+            console.log(err.message);
+        }
+    }
+
     useEffect(() => {
         InteractionManager.runAfterInteractions(() => {
             /* 2: Component is done animating */
             const getPdfsWithPermission = async () => {
-                let isGranted = await requestExternalStoreageRead();
-                if(isGranted) {
+                // let isGranted1 = await requestExternalStoreageRead();
+                let isGranted2 = await requestExternalStoreageWrite();
+                if(isGranted2) {
                     await findPDFs(setAllPdfs);
+                }
+                else {
+                    BackHandler.exitApp();
                 }
             }
             getPdfsWithPermission();  
@@ -123,23 +152,6 @@ const FileScreen = ({navigation, theme}) => {
         setOrder(_order);
         SortingFunction(setAllPdfs, sort_type, _order);
     }
-    
-    let _layoutProvider = new LayoutProvider(
-        index => {
-            return ViewTypes.FULL;
-        },
-        (type, dim) => {
-            dim.width = width;
-            dim.height = 73;
-        }
-    );
-
-    //Since component should always render once data has changed, make data provider part of the state
-
-    let _rowRenderer = (type, data) => {
-        //You can return any view here, CellContainer has no special significance
-        return <PdfItem item = {data} theme = {theme} showBottomSlider = {showBottomSlider} navigation = {navigation}/>
-    }
 
     return (
         allPdfs._data.length === 0 ? 
@@ -148,9 +160,9 @@ const FileScreen = ({navigation, theme}) => {
             barStyle="light-content"
             backgroundColor="#694fad"/>
             <NavBar showSortingModal = {showSortingModal} navigation = {navigation}/>
-            <View style = {{flex: 1}}>
+            {/* <View style = {{flex: 1}}>
                 <FileLoader/>
-            </View>
+            </View> */}
         </SafeAreaView> :
         <SafeAreaView style = {{flex: 1}}>
         <SafeAreaView style={styles.container} >
@@ -180,11 +192,12 @@ const FileScreen = ({navigation, theme}) => {
                 theme = {theme}
                 />
             }
-            <RecyclerListView 
-            layoutProvider={_layoutProvider} 
-            dataProvider={allPdfs} 
-            rowRenderer={_rowRenderer}
-            useWindowScroll
+
+            <ListView
+            data = {allPdfs}
+            theme = {theme}
+            navigation = {navigation}
+            showBottomSlider = {showBottomSlider}
             />
             { isBottomSliderVisible && <BottomSlider openBrowserModal = {openBrowserModal} openRenameModal = {openRenameModal} showDeleteModal = {showDeleteModal} theme={theme} visible = {isBottomSliderVisible} hideModal = {hideBottomSlider} selectedPdf = {selectedPdf}/>}
             <DirectoryBrowser
