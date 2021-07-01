@@ -5,6 +5,7 @@ import {
   View,
   TouchableOpacity,
   Animated,
+  StatusBar
 } from 'react-native';
 import Pdf from 'react-native-pdf';
 import { useWindowDimensions } from 'react-native';
@@ -316,6 +317,9 @@ const PdfViewer = ({navigation, route, theme}) => {
 
     return (
         <View style={styles.container}>
+            <StatusBar
+            barStyle="light-content"
+            backgroundColor="#694fad"/>
             <NavBar 
                 theme = {theme} 
                 appBarHeight = {appBarHeight} 

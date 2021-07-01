@@ -3,7 +3,8 @@ import { useEffect, useState } from 'react';
 import {
   StyleSheet,
   InteractionManager,
-  Dimensions
+  Dimensions,
+  StatusBar
 } from 'react-native';
 import { withTheme } from 'react-native-paper';
 import NavBar from './NavBar';
@@ -117,9 +118,15 @@ const RecentScreen = ({navigation, theme}) => {
     return (
         recentPdfs._data.length === 0 ? 
         <SafeAreaView style={styles.container}>
+            <StatusBar
+            barStyle="light-content"
+            backgroundColor="#694fad"/>
             <NavBar showSortingModal = {showSortingModal} navigation = {navigation}/>
         </SafeAreaView> :
         <SafeAreaView style={styles.container}>
+            <StatusBar
+            barStyle="light-content"
+            backgroundColor="#694fad"/>
             <NavBar showSortingModal = {showSortingModal} navigation = {navigation}/>
             <SortingModal 
             visible = {sortingModalVisible} 

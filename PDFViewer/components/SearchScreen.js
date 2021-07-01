@@ -6,6 +6,7 @@ import {
   InteractionManager,
   Dimensions,
   Text,
+  StatusBar
 } from 'react-native';
 import { withTheme, Appbar, Searchbar, DefaultTheme } from 'react-native-paper';
 import { RecyclerListView, LayoutProvider, DataProvider } from "recyclerlistview";
@@ -248,6 +249,9 @@ const SearchScreen = ({navigation}) => {
 
     return (
         <SafeAreaView style = {styles.container}>
+            <StatusBar
+            barStyle="light-content"
+            backgroundColor="#694fad"/>
             <SearchBar query = {query} setQuery = {setQuery} navigation = {navigation} Search = {Search}/>
             {
                 result._data.length === 0 ?

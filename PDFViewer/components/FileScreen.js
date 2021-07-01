@@ -5,6 +5,7 @@ import {
   View,
   InteractionManager,
   Dimensions, 
+  StatusBar
 } from 'react-native';
 import { withTheme } from 'react-native-paper';
 import NavBar from './NavBar';
@@ -143,6 +144,9 @@ const FileScreen = ({navigation, theme}) => {
     return (
         allPdfs._data.length === 0 ? 
         <SafeAreaView style={styles.container}>
+            <StatusBar
+            barStyle="light-content"
+            backgroundColor="#694fad"/>
             <NavBar showSortingModal = {showSortingModal} navigation = {navigation}/>
             <View style = {{flex: 1}}>
                 <FileLoader/>
@@ -150,6 +154,9 @@ const FileScreen = ({navigation, theme}) => {
         </SafeAreaView> :
         <SafeAreaView style = {{flex: 1}}>
         <SafeAreaView style={styles.container} >
+            <StatusBar
+            barStyle="light-content"
+            backgroundColor="#694fad"/>
             <NavBar showSortingModal = {showSortingModal} navigation = {navigation}/>
             <SortingModal 
             visible = {sortingModalVisible} 
