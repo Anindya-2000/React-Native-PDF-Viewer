@@ -213,7 +213,7 @@ const findPDFs = async (setAllPdfs) => {
           path: "myrealm",
           schema: schema,
         });
-
+ 
         let pdfList = realm.objects("Pdf");
         let id = -1;
         pdfList.forEach(pdf => {
@@ -222,7 +222,6 @@ const findPDFs = async (setAllPdfs) => {
         })
 
         id += 1;
-
         if(pdfList.length === 0) {
             await GetAllPdfs(RNFS.ExternalStorageDirectoryPath, pdfArray);
             pdfArray.forEach(pdf => {
@@ -241,6 +240,7 @@ const findPDFs = async (setAllPdfs) => {
                 });
                 id++;
             })
+            
             pdfList = realm.objects('Pdf');
             copyData(pdfList, setAllPdfs);
             realm.write(() => {
@@ -293,17 +293,22 @@ const findPDFs = async (setAllPdfs) => {
         }
 
     } catch (err) {
-        console.error("Failed to open the realm", err.message);
+        console.error("Realm opening error: ", err.message);
     } 
 }
 
 
 // Recursive Function for exhaustive search of directory
-const GetAllPdfs = async (path, pdfArray, isUpdate = false, isExist) => {
+const GetAllPdfs = async (path, pdfArray, isUpdate = false, isExist = {}) => {
+
     const result = await RNFS.readDir(path)
                     .then((res) => {
                         return res;
                     })
+                    .catch(err => {
+                        console.log(err);
+                    })
+
     for(let i = 0; i < result.length; ++i) {
         let res = result[i];
         if(res.name != 'Android') { 

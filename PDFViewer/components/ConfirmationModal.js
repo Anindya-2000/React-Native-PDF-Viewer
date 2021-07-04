@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import {
     StyleSheet,
     Text,
     View,
 } from 'react-native';
-import { Portal, Modal, RadioButton, withTheme, Button as PaperBtn } from 'react-native-paper';
+import { Portal, Modal, withTheme, Button as PaperBtn } from 'react-native-paper';
 import { usePdfContext } from './Context';
 
 const ConfirmationModal = (props) => {

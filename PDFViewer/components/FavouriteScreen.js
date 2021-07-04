@@ -8,26 +8,18 @@ import {
 import { withTheme } from 'react-native-paper';
 import SortingModal from './SortingModal';
 import NavBar from './NavBar';
-import { RecyclerListView, LayoutProvider } from "recyclerlistview";
 import { SortingFunction } from './utils';
 import BottomSlider from './BottomSlider';
 import ConfirmationModal from './ConfirmationModal';
 import { usePdfContext } from './Context';
-import PdfItem from './PdfItem';
 import RenameModal from './RenameModal';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import DirectoryBrowser from './DirectoryBrowser';
 import ListView from './ListView';
-
-const ViewTypes = {
-    FULL: 0,
-    HALF_LEFT: 1,
-    HALF_RIGHT: 2
-};
+import Orientation from 'react-native-orientation';
 
 const FavouriteScreen = ({navigation, route, theme}) => {
     const {favPdfs, setFavPdfs, getFavPdfs} = usePdfContext();
-    let { width } = Dimensions.get("window");
     const [selectedPdf, setSelectedPdf] = useState(null);
 
     const [sortVariant, setSortVariant] = useState(0);
@@ -73,7 +65,7 @@ const FavouriteScreen = ({navigation, route, theme}) => {
     const sortPdfs = (sort_type, _order = -1) => {
         setSortVariant(sort_type);
         setOrder(_order);
-        SortingFunction(setAllPdfs, sort_type, _order);
+        SortingFunction(setFavPdfs, sort_type, _order, "fav");
     }
 
     // Directory Browser Modal
@@ -93,6 +85,16 @@ const FavouriteScreen = ({navigation, route, theme}) => {
         });     
     }, [])
 
+    React.useEffect(() => {
+        const unsubscribe = navigation.addListener('focus', () => {
+          // The screen is focused
+          // Call any action
+            Orientation.lockToPortrait();
+        });
+    
+        // Return the function to unsubscribe from the event so it gets removed on unmount
+        return unsubscribe;
+    }, [navigation]);
 
     return (
         favPdfs._data.length === 0 ? 
@@ -106,7 +108,7 @@ const FavouriteScreen = ({navigation, route, theme}) => {
             <StatusBar
             barStyle="light-content"
             backgroundColor="#694fad"/>
-            <NavBar showSortingModal = {showSortingModal} navigation = {navigation}/>
+            <NavBar showSortingModal = {showSortingModal} navigation = {navigation} isRecent = {false}/>
             <SortingModal 
             visible = {sortingModalVisible} 
             hideModal = {hideSortingModal} 

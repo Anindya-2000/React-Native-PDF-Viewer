@@ -5,7 +5,6 @@ import {
   View,
   InteractionManager,
   Dimensions,
-  Text,
   StatusBar
 } from 'react-native';
 import { withTheme, Appbar, Searchbar, DefaultTheme } from 'react-native-paper';
@@ -18,6 +17,8 @@ import ConfirmationModal from './ConfirmationModal';
 import RenameModal from './RenameModal';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import DirectoryBrowser from './DirectoryBrowser';
+import Orientation from 'react-native-orientation';
+import ListView from './ListView';
 
 const ViewTypes = {
     FULL: 0,
@@ -59,7 +60,7 @@ const SearchBar = (props) => {
 };
 
 
-const SearchScreen = ({navigation}) => {
+const SearchScreen = ({navigation, theme}) => {
     const [allPdfs, setAllPdfs] = useState([]);
     const [query, setQuery] = useState('');
     const [selectedPdf, setSelectedPdf] = useState(null);
@@ -159,23 +160,6 @@ const SearchScreen = ({navigation}) => {
         setRenameModalOpen(false)
     };
 
-    let _layoutProvider = new LayoutProvider(
-        index => {
-            return ViewTypes.FULL;
-        },
-        (type, dim) => {
-            dim.width = width;
-            dim.height = 73;
-        }
-    );
-
-    //Since component should always render once data has changed, make data provider part of the state
-
-    let _rowRenderer = (type, data) => {
-        //You can return any view here, CellContainer has no special significance
-        return <PdfItem item = {data} theme = {theme} showBottomSlider = {showBottomSlider} navigation = {navigation}/>
-    }
-
     const Search = () => {
         let res = [];
         let b = query.toLowerCase().split(' ').join('');
@@ -247,6 +231,17 @@ const SearchScreen = ({navigation}) => {
         })
     }, [])
 
+    React.useEffect(() => {
+        const unsubscribe = navigation.addListener('focus', () => {
+          // The screen is focused
+          // Call any action
+            Orientation.lockToPortrait();
+        });
+    
+        // Return the function to unsubscribe from the event so it gets removed on unmount
+        return unsubscribe;
+    }, [navigation]);
+
     return (
         <SafeAreaView style = {styles.container}>
             <StatusBar
@@ -264,10 +259,11 @@ const SearchScreen = ({navigation}) => {
                     hideModal = {hideDeleteModal}
                     selectedPdf = {selectedPdf}
                     />
-                    <RecyclerListView 
-                    layoutProvider={_layoutProvider} 
-                    dataProvider={result} 
-                    rowRenderer={_rowRenderer}
+                    <ListView
+                    data = {result}
+                    theme = {theme}
+                    navigation = {navigation}
+                    showBottomSlider = {showBottomSlider}
                     />
                 </SafeAreaView>
             }

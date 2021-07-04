@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import {
     StyleSheet,
-    Text,
     View,
 } from 'react-native';
-import { Portal, Modal, RadioButton, withTheme, Button as PaperBtn, TextInput as PaperTextInput } from 'react-native-paper';
+import { Portal, Modal, withTheme, Button as PaperBtn, TextInput as PaperTextInput } from 'react-native-paper';
 import { usePdfContext } from './Context';
 
 const RenameModal = (props) => {
@@ -12,15 +11,7 @@ const RenameModal = (props) => {
     const {setAllPdfs, setFavPdfs, setRecentPdfs, renameFile} = usePdfContext();
     const [input, setInput] = useState('');
     const [pdf, setPdf] = useState(null);
-    const [cursorPos, setCursorPos] = useState({
-        start: 0,
-        end: 0,
-    })
 
-    const handleSelectionChange = ({ nativeEvent: { selection } }) => {
-        console.log(selection)
-        // setCursorPos(selection);
-    }
     useEffect(() => {
         if(selectedPdf !== null) {
             setPdf(selectedPdf);

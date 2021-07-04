@@ -1,5 +1,5 @@
 import 'react-native-gesture-handler';
-import React from 'react';
+import React, {useEffect} from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
@@ -12,6 +12,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import { PdfProvider } from './components/Context';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import RNBootSplash from "react-native-bootsplash";
 
 
 const Tab = createMaterialBottomTabNavigator();
@@ -58,6 +59,18 @@ const BottomTab = () => {
 }
 
 const App = ({theme}) => {
+  useEffect(() => {
+    const init = async () => {
+      // …do multiple sync or async tasks
+      setTimeout(() => {}, 2000);
+    };
+
+    init().finally(async () => {
+      await RNBootSplash.hide({ fade: true });
+      console.log("Bootsplash has been hidden successfully");
+    });
+  }, []);
+
   return (
     <PdfProvider>
       <SafeAreaProvider>
@@ -69,7 +82,6 @@ const App = ({theme}) => {
         </Stack.Navigator>   
       </NavigationContainer>
       </SafeAreaProvider>
-      
     </PdfProvider>
     
   );

@@ -3,32 +3,24 @@ import { useEffect, useState } from 'react';
 import {
   StyleSheet,
   InteractionManager,
-  Dimensions,
   StatusBar
 } from 'react-native';
 import { withTheme } from 'react-native-paper';
 import NavBar from './NavBar';
 import SortingModal from './SortingModal';
-import { RecyclerListView, DataProvider, LayoutProvider } from "recyclerlistview";
 import { SortingFunction } from './utils';
 import BottomSlider from './BottomSlider';
 import ConfirmationModal from './ConfirmationModal';
 import { usePdfContext } from './Context';
-import PdfItem from './PdfItem';
 import RenameModal from './RenameModal';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import DirectoryBrowser from './DirectoryBrowser';
 import ListView from './ListView';
+import Orientation from 'react-native-orientation';
 
-const ViewTypes = {
-    FULL: 0,
-    HALF_LEFT: 1,
-    HALF_RIGHT: 2
-};
 
 const RecentScreen = ({navigation, theme}) => {
     const {recentPdfs, setRecentPdfs, getRecentPdfs } = usePdfContext();
-    let { width } = Dimensions.get("window");
 
     const [sortVariant, setSortVariant] = useState(0);
     const [order, setOrder] = useState(-1);
@@ -67,7 +59,7 @@ const RecentScreen = ({navigation, theme}) => {
     const sortPdfs = (sort_type, _order = -1) => {
         setSortVariant(sort_type);
         setOrder(_order);
-        SortingFunction(setAllPdfs, sort_type, _order);
+        SortingFunction(setRecentPdfs, sort_type, _order, "recent");
     }
 
     // Rename Modal
@@ -97,6 +89,17 @@ const RecentScreen = ({navigation, theme}) => {
         });
     }, []) 
 
+    React.useEffect(() => {
+        const unsubscribe = navigation.addListener('focus', () => {
+          // The screen is focused
+          // Call any action
+            Orientation.lockToPortrait();
+        });
+    
+        // Return the function to unsubscribe from the event so it gets removed on unmount
+        return unsubscribe;
+    }, [navigation]);
+
     return (
         recentPdfs._data.length === 0 ? 
         <SafeAreaView style={styles.container}>
@@ -109,7 +112,7 @@ const RecentScreen = ({navigation, theme}) => {
             <StatusBar
             barStyle="light-content"
             backgroundColor="#694fad"/>
-            <NavBar showSortingModal = {showSortingModal} navigation = {navigation}/>
+            <NavBar showSortingModal = {showSortingModal} navigation = {navigation} isRecent = {true}/>
             <SortingModal 
             visible = {sortingModalVisible} 
             hideModal = {hideSortingModal} 

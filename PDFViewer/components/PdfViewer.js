@@ -18,6 +18,7 @@ import Realm from "realm";
 import PdfSchema from '../schemas/PdfSchema';
 import UserData from '../schemas/UserData';
 import { usePdfContext } from './Context';
+import Orientation from 'react-native-orientation';
 
 const schema = [PdfSchema, UserData];
 
@@ -312,6 +313,7 @@ const PdfViewer = ({navigation, route, theme}) => {
     }
 
     useEffect(() => {
+        Orientation.unlockAllOrientations()
         setInitialValues();
     }, [])
 

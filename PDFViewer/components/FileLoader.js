@@ -4,7 +4,6 @@ import AnimatedLoader from "react-native-animated-loader";
 
 export default class Loader extends React.Component {
   render() {
-    const { visible } = true;
     return (
       <AnimatedLoader
         visible={true}

@@ -2,9 +2,8 @@ import React from 'react';
 import {
   Text,
   View,
-  TouchableOpacity,
 } from 'react-native';
-import { Card, withTheme, IconButton, Divider, TouchableRipple} from 'react-native-paper';
+import { Card, withTheme, IconButton, TouchableRipple} from 'react-native-paper';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import Entypo from 'react-native-vector-icons/Entypo';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -41,7 +40,6 @@ const PdfItem = (props) => {
                             }
                     />
                 </View>
-                {/* <Divider inset = {true}/> */}
             </TouchableRipple>);
 }
 

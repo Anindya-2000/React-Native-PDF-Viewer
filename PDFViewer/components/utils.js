@@ -1,6 +1,7 @@
 import Realm, { User } from "realm";
 import PdfSchema from "../schemas/PdfSchema";
 import UserData from "../schemas/UserData";
+import { DataProvider } from "recyclerlistview";
 
 const schema = [PdfSchema, UserData]
 
@@ -10,8 +11,40 @@ const MONTHS = [
     'Sep','Oct','Nov','Dec'
 ];
 
-export const SortingFunction = (setHook, sortType, order) => {
-    console.log(sortType);
+const copyData = (pdfList, setHook) => {
+    let pdfArray = [];
+    for(let i = 0; i < pdfList.length; ++i) {
+        pdfArray.push({
+            _id: pdfList[i]._id,
+            name: pdfList[i].name,
+            path: pdfList[i].path,
+            dir: pdfList[i].dir,
+            size: pdfList[i].size,
+            displaySize: pdfList[i].displaySize,
+            displayPath: pdfList[i].displayPath,
+            creationDate: pdfList[i].creationDate,
+            lastRead: pdfList[i].lastRead,
+            isFav: pdfList[i].isFav,
+        })
+    }
+
+    // setHook(prev => prev.cloneWithRows(pdfArray));
+    setHook(new DataProvider((r1, r2) => {
+        return r1 !== r2;
+    }).cloneWithRows(pdfArray));
+}
+
+const getSortedList = (prop, order, screen, realm) => {
+    if(screen == 'fav') {
+        return realm.objects('Pdf').filtered('isFav == true').sorted(prop, order == -1 ? false: true);
+    }
+    else {
+        return realm.objects('Pdf').sorted(prop, order == -1 ? false: true);
+    }
+    
+}
+
+export const SortingFunction = (setHook, sortType, order, screen = "all") => {
     switch(sortType) {
         // Sort by name
         case 0:
@@ -19,8 +52,8 @@ export const SortingFunction = (setHook, sortType, order) => {
                 path: 'myrealm',
                 schema: schema
             }).then(realm => {
-                const sortedList = realm.objects('Pdf').sorted('name', order == -1 ? false: true);
-                setHook(prev => prev.cloneWithRows(sortedList));
+                const sortedList = getSortedList('name', order, screen, realm);
+                copyData(sortedList, setHook)
             })
             break;
         // Sort By Size
@@ -29,8 +62,8 @@ export const SortingFunction = (setHook, sortType, order) => {
                 path: 'myrealm',
                 schema: schema
             }).then(realm => {
-                const sortedList = realm.objects('Pdf').sorted('size', order == -1 ? false: true);
-                setHook(prev => prev.cloneWithRows(sortedList));
+                const sortedList = getSortedList('size', order, screen, realm);
+                copyData(sortedList, setHook)
             })
             break;
     }

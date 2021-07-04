@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     StyleSheet,
     Text,
@@ -8,7 +8,7 @@ import {
     Modal,
     Dimensions
 } from 'react-native';
-import { IconButton, Portal, RadioButton, withTheme, Button as PaperBtn, Card, Divider, Dialog, TouchableRipple, Appbar } from 'react-native-paper';
+import { IconButton, Portal, withTheme, Button as PaperBtn, Card, TouchableRipple } from 'react-native-paper';
 import { usePdfContext } from './Context';
 import * as RNFS from 'react-native-fs';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
